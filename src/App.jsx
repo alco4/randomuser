@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 // Reusable components //
 import { CardList, CardListHeaderBar, CardItem } from "./components";
 import "./App.scss";
 import { User } from "./models";
-import { orderItemsAscendingStr, orderItemsAscendingNum } from "./utils/utils";
+import { orderItemsAscendingStr } from "./utils/utils";
 
 function App() {
-  const [usersData, setUsersData] = useState([]);
+  const usersBackup = useMemo(() => [], []);
   const [users, setUsers] = useState([]);
   const INITIAL_SORT_STATE = "name";
   const [sortValue, setSortValue] = useState(INITIAL_SORT_STATE);
@@ -16,18 +16,18 @@ function App() {
     axios
       .get("https://randomuser.me/api/?results=15")
       .then(({ data: { results } }) => {
-        /* Saving the response from the api in two different states
-        to later be able to do the filtering using the search filter 
-        text without losing the original data */
-        setUsersData(results.map((user) => User.fromJson(user)));
-        setUsers(
-          orderItemsAscendingStr(
-            results.map((user) => User.fromJson(user)),
-            INITIAL_SORT_STATE
-          )
+        const formattedData = orderItemsAscendingStr(
+          results.map((user) => User.fromJson(user)),
+          INITIAL_SORT_STATE
         );
+        setUsers(formattedData);
+
+        /* Saving a backup of the API response to later be able
+           to do the filtering using the search filter
+           without losing the original data */
+        usersBackup.push(...formattedData);
       });
-  }, []);
+  }, [usersBackup]);
 
   // Setting the different handlers that will control the events //
   const handleOnChange = (e, id, propName) => {
@@ -41,7 +41,7 @@ function App() {
   };
 
   const handleOnFilter = (e) => {
-    const filteredUsers = usersData.filter(
+    const filteredUsers = usersBackup.filter(
       (user) =>
         user.name.toLowerCase().includes(e.target.value) ||
         user.email.toLowerCase().includes(e.target.value) ||
@@ -53,11 +53,8 @@ function App() {
 
   const handleOnSort = (e) => {
     setSortValue(e.target.value);
-    const users =
-      e.target.value === "phone"
-        ? orderItemsAscendingNum(usersData, e.target.value)
-        : orderItemsAscendingStr(usersData, e.target.value);
-    setUsers(users);
+    const sortedUsers = orderItemsAscendingStr(users, e.target.value);
+    setUsers(sortedUsers);
   };
 
   return (
