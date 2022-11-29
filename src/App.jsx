@@ -48,7 +48,8 @@ function App() {
         user.phone.toLowerCase().includes(e.target.value) ||
         user.location.toLowerCase().includes(e.target.value)
     );
-    setUsers(filteredUsers);
+    const sortedUsers = orderItemsAscendingStr(filteredUsers, sortValue);
+    setUsers(sortedUsers);
   };
 
   const handleOnSort = (e) => {
