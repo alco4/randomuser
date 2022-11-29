@@ -55,8 +55,8 @@ function App() {
     setSortValue(e.target.value);
     const users =
       e.target.value === "phone"
-        ? orderItemsAscendingStr(usersData, e.target.value)
-        : orderItemsAscendingNum(usersData, e.target.value);
+        ? orderItemsAscendingNum(usersData, e.target.value)
+        : orderItemsAscendingStr(usersData, e.target.value);
     setUsers(users);
   };
 
@@ -68,8 +68,12 @@ function App() {
         sortValue={sortValue}
       />
       <CardList>
-        {users.map((user) => (
-          <CardItem cardData={user} onChange={handleOnChange} />
+        {users.map((user, i) => (
+          <CardItem
+            key={user?.id + i}
+            cardData={user}
+            onChange={handleOnChange}
+          />
         ))}
       </CardList>
     </div>

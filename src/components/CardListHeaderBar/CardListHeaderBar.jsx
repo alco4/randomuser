@@ -2,7 +2,7 @@ import "./cardListHeaderBar.scss";
 const CardListHeaderBar = ({ onFilter, onSort, sortValue }) => {
   const prefixFilter = "Order By";
   return (
-    <div class="container">
+    <div className="container">
       <input type="text" onChange={onFilter} placeholder="Type to filter..." />
       <select className="sort-select" value={sortValue} onChange={onSort}>
         <option value="name">{prefixFilter} Name</option>
